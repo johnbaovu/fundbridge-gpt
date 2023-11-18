@@ -12,17 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import inspect
-import textwrap
+import tempfile
+import openai
+from langchain.chat_models import ChatOpenAI
 
-import streamlit as st
+def check_key_validity(api_key):
+    """
+    Check if an OpenAI API key is valid.
 
+    :param api_key: The OpenAI API key to check.
 
-def show_code(demo):
-    """Showing the code of the demo."""
-    show_code = st.sidebar.checkbox("Show code", True)
-    if show_code:
-        # Showing the code of the demo.
-        st.markdown("## Code")
-        sourcelines, _ = inspect.getsourcelines(demo)
-        st.code(textwrap.dedent("".join(sourcelines[1:])))
+    :return: True if the API key is valid, False otherwise.
+    """
+    try:
+        ChatOpenAI(openai_api_key=api_key).call_as_llm('Hi')
+        print('API Key is valid')
+        return True
+    except Exception as e:
+        print('API key is invalid or OpenAI is having issues.')
+        print(e)
+        return False
