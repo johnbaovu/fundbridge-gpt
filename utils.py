@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import tempfile
-import openai
-from langchain.chat_models import ChatOpenAI
+import shutil
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
@@ -24,19 +23,15 @@ def save_file(content, filepath):
     with open(filepath, 'w', encoding='utf-8') as outfile:
         outfile.write(content)
 
-def check_key_validity(api_key):
+def create_temp_file(uploaded_file):
     """
-    Check if an OpenAI API key is valid.
+    Create a temporary file from an uploaded file.
 
-    :param api_key: The OpenAI API key to check.
+    :param uploaded_file: The uploaded file to create a temporary file from.
 
-    :return: True if the API key is valid, False otherwise.
+    :return: The path to the temporary file.
     """
-    try:
-        ChatOpenAI(openai_api_key=api_key).call_as_llm('Hi')
-        print('API Key is valid')
-        return True
-    except Exception as e:
-        print('API key is invalid or OpenAI is having issues.')
-        print(e)
-        return False
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.type.split('/')[1]}") as temp_file:
+        # Write the contents of the uploaded file to the temporary file
+        shutil.copyfileobj(uploaded_file, temp_file)
+    return temp_file.name    
