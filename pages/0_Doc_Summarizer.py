@@ -21,7 +21,7 @@ import shutil
 
 from utils import create_temp_file, validate_input, num_tokens_from_string
 
-from prompts import PROMPT_earnings
+from prompts import PROMPT_earnings, PROMPT_short
 
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader, UnstructuredPDFLoader, PyPDFLoader
@@ -44,14 +44,33 @@ def doc_summarizer() -> None:
     st.sidebar.write('Model Description:')
     st.sidebar.markdown(model_names[selected_model])
 
+    # Prompts
+    prompt_description = {
+        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.',
+        'short_summary': 'Generic summary prompt. 100-150 word summary.'
+    }
+
+    # Drop-down menu
+    selected_prompt = st.sidebar.selectbox('Select a prompt:', list(prompts.keys()))
+
+    # Display the description of the selected model
+    st.sidebar.write('Prompt Description:')
+    st.sidebar.markdown(prompt_description[selected_prompt])
+
+    # Prompts
+    prompts = {
+        'earnings': PROMPT_earnings,
+        'short_summary': PROMPT_short
+    }
+
     uploaded_file = st.file_uploader("Upload a document to summarize", type=['txt', 'pdf'])
     api_key = st.text_input("Enter API key here")
 
     if st.button('Summarize (click once and wait)'):
-        process_summarize_button(uploaded_file, api_key, selected_model)
+        process_summarize_button(uploaded_file, api_key, selected_model, prompts[selected_prompt])
 
 
-def process_summarize_button(file, api_key, openai_model):
+def process_summarize_button(file, api_key, openai_model, prompt):
     """
     Processes the summarize button, and displays the summary if input and doc size are valid
 
@@ -61,6 +80,8 @@ def process_summarize_button(file, api_key, openai_model):
 
     :param openai_model: The model selected by the user
 
+    :param prompt: The selected prompt object
+
     :return: None
     """
     if not validate_input(file, api_key):
@@ -68,28 +89,39 @@ def process_summarize_button(file, api_key, openai_model):
     
     temp_filepath = create_temp_file (file)
 
+    max_tokens = {
+        'gpt-4-1106-preview': 7500,
+        'gpt-4': 6000,
+        'gpt-3.5-turbo-1106': 12000,
+        'gpt-3.5-turbo': 2500,
+        'gpt-3.5-turbo-16k': 12000   
+    }
+
     with st.spinner("Summarizing... please wait..."):
         if file.type == 'application/pdf':
-            st.markdown ("File is a PDF!")
+            st.write ("File is a PDF!")
             loader = PyPDFLoader(temp_filepath)
-            transcript = loader.load_and_split()
+            transcript = loader.load()
         else:
-            st.markdown ("File is a text!")
+            st.write ("File is a text!")
             loader = TextLoader(temp_filepath, encoding = 'UTF-8')
             transcript = loader.load()
-        token_count = num_tokens_from_string(transcript,encoding_name='cl100k_base')
-        st.markdown(f"{token_count} TOKENS!")
+        token_count = num_tokens_from_string(transcript[0].page_content,encoding_name='cl100k_base')
+        st.write (f"{token_count} TOKENS!")
 
-        llm = ChatOpenAI(openai_api_key=api_key, model_name=openai_model)
-        chain = load_summarize_chain(llm, 
-                             chain_type="stuff", 
-                             prompt=PROMPT_earnings)
-        
-        output_summary = chain.run(transcript)
-        st.markdown(output_summary)
+        if token_count < max_tokens[openai_model]:
+
+            llm = ChatOpenAI(openai_api_key=api_key, model_name=openai_model)
+            chain = load_summarize_chain(llm, 
+                                         chain_type='stuff', 
+                                         prompt=prompt)
+            output_summary = chain.run(transcript)
+            st.text_area(label='SUMMARY', value=output_summary, height=500)
+        else:
+            st.write ("Document is too large for selected model.  Choose another model.")
 
 st.set_page_config(page_title="Doc Summarizer", page_icon="📹")
-st.markdown("# Animation Demo")
+st.markdown("# Doc Summarizer")
 st.sidebar.header("Doc Summarizer")
 st.write(
     """This app allows you to upload pdf's or txt files and summarizes them using Chat-GPT."""
