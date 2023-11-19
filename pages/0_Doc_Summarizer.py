@@ -77,7 +77,7 @@ def process_summarize_button(file, api_key, openai_model):
             st.markdown ("File is a text!")
             loader = TextLoader(temp_filepath, encoding = 'UTF-8')
             transcript = loader.load()
-        token_count = num_tokens_from_string(transcript)
+        token_count = num_tokens_from_string(transcript,encoding_name='cl100k_base')
         st.markdown(f"{token_count} TOKENS!")
 
         llm = ChatOpenAI(openai_api_key=api_key, model_name=openai_model)
