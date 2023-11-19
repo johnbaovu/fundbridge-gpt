@@ -38,35 +38,35 @@ def doc_summarizer() -> None:
         'gpt-3.5-turbo-16k': '16K context. Snapshot of gpt-3.5-16k-turbo from June 13th 2023.'
     }
     # Drop-down menu
-    selected_model = st.sidebar.selectbox('Select a model:', list(model_names.keys()))
+    selected_model = st.sidebar.selectbox(":blue[Select a model:]", list(model_names.keys()))
 
     # Display the description of the selected model
-    st.sidebar.write('Model Description:')
+    st.sidebar.write("Model Description:")
     st.sidebar.markdown(model_names[selected_model])
 
-    # Prompts
+    # Prompts with Descriptions
     prompt_description = {
-        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.',
-        'short_summary': 'Generic summary prompt. 100-150 word summary.'
+        'short_default': 'Generic summary prompt. 100-150 word summary.',
+        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.'
     }
 
     # Drop-down menu
-    selected_prompt = st.sidebar.selectbox('Select a prompt:', list(prompts.keys()))
+    selected_prompt = st.sidebar.selectbox(":blue[Select a prompt:]", list(prompt_description.keys()))
 
     # Display the description of the selected model
-    st.sidebar.write('Prompt Description:')
+    st.sidebar.write("Prompt Description:")
     st.sidebar.markdown(prompt_description[selected_prompt])
 
-    # Prompts
+    # Prompts pointing to prompt object
     prompts = {
-        'earnings': PROMPT_earnings,
-        'short_summary': PROMPT_short
+        'short_default': PROMPT_short,
+        'earnings': PROMPT_earnings
     }
 
-    uploaded_file = st.file_uploader("Upload a document to summarize", type=['txt', 'pdf'])
-    api_key = st.text_input("Enter API key here")
+    uploaded_file = st.file_uploader(":blue[Upload a document to summarize]", type=['txt', 'pdf'])
+    api_key = st.text_input(":blue[Enter API key here]")
 
-    if st.button('Summarize (click once and wait)'):
+    if st.button(":green[Summarize (click once and wait)] :coffee:"):
         process_summarize_button(uploaded_file, api_key, selected_model, prompts[selected_prompt])
 
 
@@ -116,13 +116,13 @@ def process_summarize_button(file, api_key, openai_model, prompt):
                                          chain_type='stuff', 
                                          prompt=prompt)
             output_summary = chain.run(transcript)
-            st.text_area(label='SUMMARY', value=output_summary, height=500)
+            st.text_area(label='SUMMARY', value=output_summary, height=800)
         else:
             st.write ("Document is too large for selected model.  Choose another model.")
 
 st.set_page_config(page_title="Doc Summarizer", page_icon="📹")
-st.markdown("# Doc Summarizer")
-st.sidebar.header("Doc Summarizer")
+st.markdown("# :green[Doc Summarizer]")
+st.sidebar.header(":green[Doc Summarizer]")
 st.write(
     """This app allows you to upload pdf's or txt files and summarizes them using Chat-GPT."""
 )
