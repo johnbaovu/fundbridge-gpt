@@ -19,7 +19,7 @@ import streamlit as st
 import tempfile
 import shutil
 
-from utils import create_temp_file
+from utils import create_temp_file, check_key_validity, validate_input
 
 from prompts import PROMPT_earnings
 
@@ -50,42 +50,6 @@ def doc_summarizer() -> None:
     if st.button('Summarize (click once and wait)'):
         process_summarize_button(uploaded_file, api_key, selected_model)
 
-def check_key_validity(api_key):
-    """
-    Check if an OpenAI API key is valid.
-
-    :param api_key: The OpenAI API key to check.
-
-    :return: True if the API key is valid, False otherwise.
-    """
-    try:
-        ChatOpenAI(openai_api_key=api_key).call_as_llm('Hi')
-        print('API Key is valid')
-        return True
-    except Exception as e:
-        print('API key is invalid or OpenAI is having issues.')
-        print(e)
-        return False
-
-def validate_input(file, api_key):
-    """
-    Validates the user input, and displays warnings if the input is invalid
-
-    :param file: The file uploaded by the user
-
-    :param api_key: The API key entered by the user
-
-    :return: True if the input is valid, False otherwise
-    """
-    if file == None:
-        st.warning("Please upload a file.")
-        return False
-
-    if not check_key_validity(api_key):
-        st.warning('Key not valid or API is down.')
-        return False
-
-    return True
 
 def process_summarize_button(file, api_key, openai_model):
     """
@@ -109,7 +73,7 @@ def process_summarize_button(file, api_key, openai_model):
             st.markdown ("File is a PDF!")
             loader = PyPDFLoader(temp_filepath)
             transcript = loader.load_and_split()
-        elif file.type == 'txt':
+        else:
             st.markdown ("File is a text!")
             loader = TextLoader(temp_filepath, encoding = 'UTF-8')
             transcript = loader.load()

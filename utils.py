@@ -14,6 +14,9 @@
 
 import tempfile
 import shutil
+import streamlit as st
+
+from langchain.chat_models import ChatOpenAI
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
@@ -34,4 +37,41 @@ def create_temp_file(uploaded_file):
     with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.type.split('/')[1]}") as temp_file:
         # Write the contents of the uploaded file to the temporary file
         shutil.copyfileobj(uploaded_file, temp_file)
-    return temp_file.name    
+    return temp_file.name
+
+def check_key_validity(api_key):
+    """
+    Check if an OpenAI API key is valid.
+
+    :param api_key: The OpenAI API key to check.
+
+    :return: True if the API key is valid, False otherwise.
+    """
+    try:
+        ChatOpenAI(openai_api_key=api_key).call_as_llm('Hi')
+        print('API Key is valid')
+        return True
+    except Exception as e:
+        print('API key is invalid or OpenAI is having issues.')
+        print(e)
+        return False
+
+def validate_input(file, api_key):
+    """
+    Validates the user input, and displays warnings if the input is invalid
+
+    :param file: The file uploaded by the user
+
+    :param api_key: The API key entered by the user
+
+    :return: True if the input is valid, False otherwise
+    """
+    if file == None:
+        st.warning("Please upload a file.")
+        return False
+
+    if not check_key_validity(api_key):
+        st.warning('Key not valid or API is down.')
+        return False
+
+    return True    
