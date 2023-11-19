@@ -19,7 +19,7 @@ import streamlit as st
 import tempfile
 import shutil
 
-from utils import create_temp_file, check_key_validity, validate_input
+from utils import create_temp_file, validate_input, num_tokens_from_string
 
 from prompts import PROMPT_earnings
 
@@ -77,6 +77,8 @@ def process_summarize_button(file, api_key, openai_model):
             st.markdown ("File is a text!")
             loader = TextLoader(temp_filepath, encoding = 'UTF-8')
             transcript = loader.load()
+        token_count = num_tokens_from_string(transcript)
+        st.markdown(f"{token_count} TOKENS!")
 
         llm = ChatOpenAI(openai_api_key=api_key, model_name=openai_model)
         chain = load_summarize_chain(llm, 

@@ -15,6 +15,7 @@
 import tempfile
 import shutil
 import streamlit as st
+import tiktoken
 
 from langchain.chat_models import ChatOpenAI
 
@@ -74,4 +75,10 @@ def validate_input(file, api_key):
         st.warning('Key not valid or API is down.')
         return False
 
-    return True    
+    return True
+
+def num_tokens_from_string(string: str, encoding_name: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.get_encoding(encoding_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
