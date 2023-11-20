@@ -7,8 +7,8 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 
 st.set_page_config(page_title="Context aware chatbot", page_icon="⭐")
-st.header('Context aware chatbot')
-st.write('Enhancing Chatbot Interactions through Context Awareness')
+st.markdown("# :green[ChatBot with Memory]")
+st.write('Enhancing Chatbot Interactions through Context Awareness (note: memory is wiped when you change pages)')
 
 class ContextChatbot:
 

@@ -7,6 +7,6 @@ openai==0.28
 langchain
 unstructured
 pdf2image
-pdfminer
+pdfminer.six
 pypdf
 tiktoken
