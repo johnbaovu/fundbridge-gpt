@@ -120,7 +120,7 @@ def process_summarize_button(file, api_key, openai_model, prompt):
         else:
             st.write ("Document is too large for selected model.  Choose another model.")
 
-st.sidebar.image("FundBridge.jpg")
+st.image("FundBridge.jpg")
 st.set_page_config(page_title="Doc Summarizer", page_icon="📹")
 st.markdown("# :green[Doc Summarizer]")
 st.sidebar.header(":green[Doc Summarizer]")
