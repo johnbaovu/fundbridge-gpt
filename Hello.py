@@ -14,6 +14,7 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+from streamlit_extras.app_logo import add_logo
 
 LOGGER = get_logger(__name__)
 
@@ -23,6 +24,8 @@ def run():
         page_title="Hello",
         page_icon="👋",
     )
+
+    add_logo('FundBridge.jpg')
 
     st.write("# Welcome to FundBridge-GPT! 👋")
 
