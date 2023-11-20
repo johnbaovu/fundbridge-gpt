@@ -120,7 +120,7 @@ def display_msg(msg, author):
         author (str): author of the message -user/assistant
     """
     st.session_state.messages.append({"role": author, "content": msg})
-    st.chat_message(author).write(msg)
+    st.chat_message(author).text(msg)
 
 def configure_openai_api_key():
     openai_api_key = st.sidebar.text_input(
