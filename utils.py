@@ -106,7 +106,7 @@ def enable_chat_history(func):
         if "messages" not in st.session_state:
             st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
         for msg in st.session_state["messages"]:
-            st.chat_message(msg["role"]).text(msg["content"])
+            st.chat_message(msg["role"]).write(msg["content"])
 
     def execute(*args, **kwargs):
         func(*args, **kwargs)
@@ -120,7 +120,7 @@ def display_msg(msg, author):
         author (str): author of the message -user/assistant
     """
     st.session_state.messages.append({"role": author, "content": msg})
-    st.chat_message(author).text(msg)
+    st.chat_message(author).write(msg)
 
 def configure_openai_api_key():
     openai_api_key = st.sidebar.text_input(
