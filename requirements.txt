@@ -10,3 +10,4 @@ pdf2image
 pdfminer.six
 pypdf
 tiktoken
+chromadb

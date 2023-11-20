@@ -1,45 +1,97 @@
 import streamlit as st
 
-from utils import create_temp_file, validate_input, num_tokens_from_string
+import utils
+from utils import create_temp_file, num_tokens_from_string, select_prompt
 
 from prompts import PROMPT_earnings, PROMPT_short
 
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader, UnstructuredPDFLoader, PyPDFLoader
-from langchain.chains.summarize import load_summarize_chain
-
-def chat_with_doc():
-
-    # OpenAI models
-    model_names = {
-        'gpt-4-1106-preview': '10K context. The latest GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.',
-        'gpt-4': '8K context. Snapshot of gpt-4 from June 13th 2023 with improved function calling support.',
-        'gpt-3.5-turbo-1106': '16K context. The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.',
-        'gpt-3.5-turbo': '4K context. Snapshot of gpt-3.5-turbo from June 13th 2023.',
-        'gpt-3.5-turbo-16k': '16K context. Snapshot of gpt-3.5-16k-turbo from June 13th 2023.'
-    }
-    # Drop-down menu
-    selected_model = st.sidebar.selectbox(":blue[Select a model:]", list(model_names.keys()))
-
-    # Display the description of the selected model
-    st.sidebar.write("Model Description:")
-    st.sidebar.markdown(model_names[selected_model])
-
-    api_key = st.sidebar.text_input(":blue[Enter API key here]")
-
-    uploaded_file = st.file_uploader(":blue[Upload a document to summarize]", type=['csv', 'txt', 'pdf'])
-
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
 
 st.set_page_config(page_title="Chat with Doc", page_icon="📈")
 st.markdown("# Chat with Doc")
 st.sidebar.header("Chat with Doc")
 
 st.write(
-    """This app allows you to upload pdf's, csv, or txt files and allows you to ask questions about them."""
+    """This app allows you to upload pdf's or text and allows you to ask questions about them."""
 )
 
 st.write(
     """Upload the document below and select the OpenAI model.  Each model will have different capabilities and costs."""
 )
 
-chat_with_doc()
+class CustomDataChatbot:
+
+    def __init__(self):
+        utils.configure_openai_api_key()
+        self.openai_model = utils.select_openai_model()   
+
+    @st.spinner('Analyzing documents..')
+    def setup_qa_chain(self, uploaded_files):
+        # Load documents
+        docs = []
+        for file in uploaded_files:
+            file_path = create_temp_file (file)
+            if file.type == 'application/pdf':
+                st.write ("File is a PDF!")
+                loader = PyPDFLoader(file_path)
+                docs.extend(loader.load())
+            else:
+                st.write ("File is a text!")
+                loader = TextLoader(file_path, encoding = 'UTF-8')
+                docs.extend(loader.load())
+        
+        # Split documents
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1500,
+            chunk_overlap=200
+        )
+        splits = text_splitter.split_documents(docs)
+
+        # Create embeddings and store in vectordb
+        db = chroma.(docs, OpenAIEmbeddings())
+
+        # Define retriever
+        retriever = vectordb.as_retriever(
+            search_type='mmr',
+            search_kwargs={'k':2, 'fetch_k':4}
+        )
+
+        # Setup memory for contextual conversation        
+        memory = ConversationBufferMemory(
+            memory_key='chat_history',
+            return_messages=True
+        )
+
+        # Setup LLM and QA chain
+        llm = ChatOpenAI(model_name=self.openai_model, temperature=0, streaming=True)
+        qa_chain = ConversationalRetrievalChain.from_llm(llm, retriever=retriever, memory=memory, verbose=True)
+        return qa_chain
+
+    @utils.enable_chat_history
+    def main(self):
+
+        # User Inputs
+        uploaded_files = st.sidebar.file_uploader(label='Upload PDF files', type=['pdf'], accept_multiple_files=True)
+        if not uploaded_files:
+            st.error("Please upload PDF documents to continue!")
+            st.stop()
+
+        user_query = st.chat_input(placeholder="Ask me anything!")
+
+        if uploaded_files and user_query:
+            qa_chain = self.setup_qa_chain(uploaded_files)
+
+            utils.display_msg(user_query, 'user')
+
+            with st.chat_message("assistant"):
+                st_cb = StreamHandler(st.empty())
+                response = qa_chain.run(user_query, callbacks=[st_cb])
+                st.session_state.messages.append({"role": "assistant", "content": response})
+
+if __name__ == "__main__":
+    obj = DocSummarizer()
+    obj.main()
