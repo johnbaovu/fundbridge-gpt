@@ -3,13 +3,15 @@ import streamlit as st
 import utils
 from utils import create_temp_file, num_tokens_from_string, select_prompt
 
-from prompts import PROMPT_earnings, PROMPT_short
+from streaming import StreamHandler
 
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader, UnstructuredPDFLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import faiss
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
 
 st.set_page_config(page_title="Chat with Doc", page_icon="📈")
 st.markdown("# Chat with Doc")
@@ -52,10 +54,10 @@ class CustomDataChatbot:
         splits = text_splitter.split_documents(docs)
 
         # Create embeddings and store in vectordb
-        db = chroma.(docs, OpenAIEmbeddings())
+        db = faiss.FAISS.from_documents (docs, OpenAIEmbeddings())
 
         # Define retriever
-        retriever = vectordb.as_retriever(
+        retriever = db.as_retriever(
             search_type='mmr',
             search_kwargs={'k':2, 'fetch_k':4}
         )
@@ -75,9 +77,9 @@ class CustomDataChatbot:
     def main(self):
 
         # User Inputs
-        uploaded_files = st.sidebar.file_uploader(label='Upload PDF files', type=['pdf'], accept_multiple_files=True)
+        uploaded_files = st.sidebar.file_uploader(label='Upload PDF or text files', type=['pdf','txt'], accept_multiple_files=True)
         if not uploaded_files:
-            st.error("Please upload PDF documents to continue!")
+            st.error("Please upload documents to continue!")
             st.stop()
 
         user_query = st.chat_input(placeholder="Ask me anything!")
@@ -93,5 +95,5 @@ class CustomDataChatbot:
                 st.session_state.messages.append({"role": "assistant", "content": response})
 
 if __name__ == "__main__":
-    obj = DocSummarizer()
+    obj = CustomDataChatbot()
     obj.main()

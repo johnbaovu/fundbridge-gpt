@@ -11,3 +11,4 @@ pdfminer.six
 pypdf
 tiktoken
 chromadb
+faiss-cpu
