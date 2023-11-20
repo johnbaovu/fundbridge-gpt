@@ -20,6 +20,8 @@ import tiktoken
 
 from langchain.chat_models import ChatOpenAI
 
+from prompts import PROMPT_earnings, PROMPT_short
+
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
         return infile.read()
@@ -88,7 +90,7 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
 def enable_chat_history(func):
     if os.environ.get("OPENAI_API_KEY"):
 
-        # to clear chat history after swtching chatbot
+        # to clear chat history after switching chatbot
         current_page = func.__qualname__
         if "current_page" not in st.session_state:
             st.session_state["current_page"] = current_page
@@ -152,3 +154,20 @@ def select_openai_model():
     st.sidebar.write("Model Description:")
     st.sidebar.markdown(model_description[selected_model])
     return selected_model
+
+def select_prompt():    
+    prompt_description = {
+        'short_default': 'Generic summary prompt. 100-150 word summary.',
+        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.'
+        }
+        
+    # Drop-down menu
+    selected_prompt = st.selectbox(":blue[Select a prompt:]", list(prompt_description.keys()))
+    # Display the description of the selected model
+    st.markdown(prompt_description[selected_prompt])
+    # Prompts pointing to prompt object
+    prompts = {
+        'short_default': PROMPT_short,
+        'earnings': PROMPT_earnings
+        }   
+    return prompts[selected_prompt]

@@ -4,21 +4,23 @@ from streaming import StreamHandler
 
 from langchain.llms import OpenAI
 from langchain.chains import ConversationChain
-from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
 
-st.set_page_config(page_title="Chatbot", page_icon="💬")
-st.header('Basic Chatbot')
-st.write('Allows users to interact with the LLM')
+st.set_page_config(page_title="Context aware chatbot", page_icon="⭐")
+st.header('Context aware chatbot')
+st.write('Enhancing Chatbot Interactions through Context Awareness')
 
-class Basic:
+class ContextChatbot:
 
     def __init__(self):
         utils.configure_openai_api_key()
         self.openai_model = utils.select_openai_model()
     
-    def setup_chain(self):
-        llm = OpenAI(model_name=self.openai_model, temperature=0, streaming=True)
-        chain = ConversationChain(llm=llm, verbose=True)
+    @st.cache_resource
+    def setup_chain(_self):
+        memory = ConversationBufferMemory()
+        llm = OpenAI(model_name=_self.openai_model, temperature=0, streaming=True)
+        chain = ConversationChain(llm=llm, memory=memory, verbose=True)
         return chain
     
     @utils.enable_chat_history
@@ -33,5 +35,5 @@ class Basic:
                 st.session_state.messages.append({"role": "assistant", "content": response})
 
 if __name__ == "__main__":
-    obj = Basic()
+    obj = ContextChatbot()
     obj.main()

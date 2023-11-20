@@ -3,7 +3,7 @@ pandas
 pydeck
 streamlit
 streamlit-extras
-openai
+openai==0.28
 langchain
 unstructured
 pdf2image
