@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import tempfile
 import shutil
 import streamlit as st
@@ -82,3 +83,72 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.get_encoding(encoding_name)
     num_tokens = len(encoding.encode(string))
     return num_tokens
+
+#decorator
+def enable_chat_history(func):
+    if os.environ.get("OPENAI_API_KEY"):
+
+        # to clear chat history after swtching chatbot
+        current_page = func.__qualname__
+        if "current_page" not in st.session_state:
+            st.session_state["current_page"] = current_page
+        if st.session_state["current_page"] != current_page:
+            try:
+                st.cache_resource.clear()
+                del st.session_state["current_page"]
+                del st.session_state["messages"]
+            except:
+                pass
+
+        # to show chat history on ui
+        if "messages" not in st.session_state:
+            st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+        for msg in st.session_state["messages"]:
+            st.chat_message(msg["role"]).write(msg["content"])
+
+    def execute(*args, **kwargs):
+        func(*args, **kwargs)
+    return execute
+
+def display_msg(msg, author):
+    """Method to display message on the UI
+
+    Args:
+        msg (str): message to display
+        author (str): author of the message -user/assistant
+    """
+    st.session_state.messages.append({"role": author, "content": msg})
+    st.chat_message(author).write(msg)
+
+def configure_openai_api_key():
+    openai_api_key = st.sidebar.text_input(
+        label="OpenAI API Key",
+        type="password",
+        value=st.session_state['OPENAI_API_KEY'] if 'OPENAI_API_KEY' in st.session_state else '',
+        placeholder="sk-..."
+        )
+    if openai_api_key:
+        st.session_state['OPENAI_API_KEY'] = openai_api_key
+        os.environ['OPENAI_API_KEY'] = openai_api_key
+    else:
+        st.error("Please add your OpenAI API key to continue.")
+        st.info("Obtain your key from this link: https://platform.openai.com/account/api-keys")
+        st.stop()
+    return openai_api_key
+
+def select_openai_model():
+    # OpenAI models
+    model_description = {
+        'gpt-4-1106-preview': '10K context. The latest GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.',
+        'gpt-4': '8K context. Snapshot of gpt-4 from June 13th 2023 with improved function calling support.',
+        'gpt-3.5-turbo-1106': '16K context. The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.',
+        'gpt-3.5-turbo': '4K context. Snapshot of gpt-3.5-turbo from June 13th 2023.',
+        'gpt-3.5-turbo-16k': '16K context. Snapshot of gpt-3.5-16k-turbo from June 13th 2023.'
+    }
+    # Drop-down menu
+    selected_model = st.sidebar.selectbox(":blue[Select a model:]", list(model_description.keys()))
+
+    # Display the description of the selected model
+    st.sidebar.write("Model Description:")
+    st.sidebar.markdown(model_description[selected_model])
+    return selected_model
