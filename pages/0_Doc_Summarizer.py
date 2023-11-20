@@ -12,12 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any
-
-import os
 import streamlit as st
-import tempfile
-import shutil
 
 from utils import create_temp_file, validate_input, num_tokens_from_string
 
@@ -123,6 +118,7 @@ def process_summarize_button(file, api_key, openai_model, prompt):
 st.set_page_config(page_title="Doc Summarizer", page_icon="📹")
 st.markdown("# :green[Doc Summarizer]")
 st.sidebar.header(":green[Doc Summarizer]")
+
 st.write(
     """This app allows you to upload pdf's or txt files and summarizes them using Chat-GPT."""
 )
