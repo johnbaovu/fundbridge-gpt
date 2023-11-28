@@ -32,7 +32,7 @@ class DocSummarizer:
             'gpt-3.5-turbo': 2500,
             'gpt-3.5-turbo-16k': 12000   
         }
-        st.write (max_tokens[self.openai_model])
+        st.write ("MAX TOKENS:", max_tokens[self.openai_model])
         prompt = select_prompt()
 
         if st.button(":green[Summarize (click once and wait)] :coffee:"):
@@ -46,7 +46,7 @@ class DocSummarizer:
                     st.write ("File is a text!")
                     loader = TextLoader(temp_filepath, encoding = 'UTF-8')
                     transcript = loader.load()
-                token_count = num_tokens_from_string(transcript[0].page_content,encoding_name='cl100k_base')
+                token_count = num_tokens_from_string(transcript.page_content,encoding_name='cl100k_base')
                 st.write (f"This document contains {token_count} TOKENS!")
 
                 if token_count < max_tokens[self.openai_model]:
