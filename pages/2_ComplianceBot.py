@@ -13,15 +13,15 @@ from langchain.vectorstores import faiss
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
-st.set_page_config(page_title="Chat with Doc", page_icon="📈")
-st.markdown("# Chat with Doc")
+st.set_page_config(page_title="Chat with ComplianceBot", page_icon="📈")
+st.markdown("# Chat with ComplianceBot")
 
 st.write(
-    """This app allows you to upload pdf's or text and allows you to ask questions about them."""
+    """This app allows you to chat with ComplianceBot, which has a knowledge base of Singapore-related compliance matters."""
 )
 
 st.write(
-    """Upload the document below, input your OpenAI key and select the OpenAI model.  Each model will have different capabilities and costs."""
+    """Input your OpenAI key and select the OpenAI model.  Each model will have different capabilities and costs."""
 )
 
 class CustomDataChatbot:
@@ -30,7 +30,7 @@ class CustomDataChatbot:
         utils.configure_openai_api_key()
         self.openai_model = utils.select_openai_model()   
 
-    @st.spinner('Analyzing documents..')
+    @st.spinner('Loading knowledge base documents..')
     def setup_qa_chain(self, uploaded_files):
         # Load documents
         docs = []

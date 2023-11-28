@@ -14,7 +14,7 @@ st.write(
     """This app allows you to upload pdf's or txt files and summarizes them using Chat-GPT."""
 )
 st.write(
-    """Upload the document below and select the OpenAI model to do the summary.  Each model will have different capabilities and costs."""
+    """Upload the document below, input your OpenAI key and select the OpenAI model to do the summary.  Each model will have different capabilities and costs."""
 )
 
 class DocSummarizer:
