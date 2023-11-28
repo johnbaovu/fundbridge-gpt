@@ -48,12 +48,12 @@ class DocSummarizer:
                     transcript = loader.load()
 
                 total_token_count = 0
-                for i in range(len(transcript)):
-                    token_count = num_tokens_from_string(transcript[i].page_content,encoding_name='cl100k_base')
+                for page in transcript:
+                    token_count = num_tokens_from_string(page.page_content,encoding_name='cl100k_base')
                     total_token_count += token_count 
-                st.write (f"This document contains {token_count} TOKENS!")
+                st.write (f"This document contains {total_token_count} TOKENS!")
 
-                if token_count < max_tokens[self.openai_model]:
+                if total_token_count < max_tokens[self.openai_model]:
                     llm = ChatOpenAI(model_name=self.openai_model)
                     chain = load_summarize_chain(llm, chain_type='stuff', prompt=prompt)
                     output_summary = chain.run(transcript)
