@@ -46,7 +46,7 @@ class DocSummarizer:
                     st.write ("File is a text!")
                     loader = TextLoader(temp_filepath, encoding = 'UTF-8')
                     transcript = loader.load()
-                token_count = num_tokens_from_string(transcript.page_content,encoding_name='cl100k_base')
+                token_count = sum(num_tokens_from_string(transcript.page_content,encoding_name='cl100k_base'))
                 st.write (f"This document contains {token_count} TOKENS!")
 
                 if token_count < max_tokens[self.openai_model]:
