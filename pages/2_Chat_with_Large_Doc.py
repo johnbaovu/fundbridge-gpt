@@ -14,7 +14,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
 st.set_page_config(page_title="Chat with Large Doc", page_icon="📈")
-st.markdown("# Chat with ComplianceBot")
+st.markdown("# Chat with Large Doc")
 
 st.write(
     """This app allows you to chat with a Large Doc, which is larger than the context window."""
