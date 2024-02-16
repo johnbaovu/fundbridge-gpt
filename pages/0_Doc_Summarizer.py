@@ -26,7 +26,7 @@ class DocSummarizer:
     def main(self):
         uploaded_file = st.file_uploader(":blue[Upload a document to summarize]", type=['txt', 'pdf'])
         max_tokens = {
-            'gpt-4-1106-preview': 7500,
+            'gpt-4-turbo-preview': 100000,
             'gpt-4': 6000,
             'gpt-3.5-turbo-1106': 12000,
             'gpt-3.5-turbo': 2500,
