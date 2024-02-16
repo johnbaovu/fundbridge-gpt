@@ -13,7 +13,8 @@ earnings_prompt_template = """Summarize key takeaways in the transcript of an ea
 
 Additional Guidelines:
 
-- Present points in bullet point form only.
+- Present points in bullet point form only. This is IMPORTANT!
+- DO NOT FORGET TO ADDRESS EACH POINT.
 - Include as much detail as possible. More detail is better.
 - Include numeric figures where relevant.
 
