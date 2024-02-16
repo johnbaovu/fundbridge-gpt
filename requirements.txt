@@ -13,3 +13,4 @@ tiktoken
 chromadb
 faiss-cpu
 clipboard
+langchain_community
