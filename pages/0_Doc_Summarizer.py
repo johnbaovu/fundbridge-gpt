@@ -57,8 +57,7 @@ class DocSummarizer:
                     llm = ChatOpenAI(model_name=self.openai_model)
                     chain = load_summarize_chain(llm, chain_type='stuff', prompt=prompt)
                     output_summary = chain.run(transcript)
-                    st.code(output_summary)
-                    ##st.text_area(label='SUMMARY', value=output_summary, height=800)
+                    st.text_area(label='SUMMARY', value=output_summary, height=800)
                 else:
                     st.write ("Document is too large for selected model!  Choose another model.")
 
