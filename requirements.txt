@@ -12,3 +12,4 @@ pypdf
 tiktoken
 chromadb
 faiss-cpu
+clipboard
