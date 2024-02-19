@@ -158,7 +158,7 @@ def select_openai_model():
 def select_prompt():    
     prompt_description = {
         'short_default': 'Generic summary prompt. 100-150 word summary.',
-        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.'
+        'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.',
         'investment': 'Prompt to summarize an investment write-up.'
         }
         
