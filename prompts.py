@@ -50,3 +50,22 @@ ARTICLE:
 
 PROMPT_short = PromptTemplate(template=short_prompt_template, input_variables=["text"])
 
+investment_prompt_template = """Summarize the investment rationale for the stock in the article.  Highlight any mentions about financial ratios, valuation and projections.
+
+Guidelines:
+
+- Include descriptive headers to make it easier to read and understand.  THIS IS IMPORTANT!
+- Exclude any disclaimers and page number references.
+- Write in bullet points.
+- Include any financial information such as valuation, earnings, free cash flow, yields, EBITDA, and/or EBIT.
+- Be verbose.  Include lots of detail about the investment rationale.  More information is better
+
+Respond with:
+------------
+Here is the investment rationale for [Name of the Stock]
+
+ARTICLE:
+{text}
+"""
+
+PROMPT_investment = PromptTemplate(template=investment_prompt_template, input_variables=["text"])

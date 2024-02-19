@@ -59,7 +59,6 @@ class DocSummarizer:
                     chain = load_summarize_chain(llm, chain_type='stuff', prompt=prompt)
                     output_summary = chain.run(transcript)
                     st.text_area(label='SUMMARY', value=output_summary, height=800)
-                    st.button("📋", on_click=clipboard.copy(output_summary) )
                 else:
                     st.write ("Document is too large for selected model!  Choose another model.")
 

@@ -20,7 +20,7 @@ import tiktoken
 
 from langchain.chat_models import ChatOpenAI
 
-from prompts import PROMPT_earnings, PROMPT_short
+from prompts import PROMPT_earnings, PROMPT_short, PROMPT_investment
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
@@ -159,6 +159,7 @@ def select_prompt():
     prompt_description = {
         'short_default': 'Generic summary prompt. 100-150 word summary.',
         'earnings': 'Prompt for Earnings Call Transcripts. Focused on financial metrics.'
+        'investment': 'Prompt to summarize an investment write-up.'
         }
         
     # Drop-down menu
@@ -168,6 +169,7 @@ def select_prompt():
     # Prompts pointing to prompt object
     prompts = {
         'short_default': PROMPT_short,
-        'earnings': PROMPT_earnings
+        'earnings': PROMPT_earnings,
+        'investment': PROMPT_investment
         }   
     return prompts[selected_prompt]
