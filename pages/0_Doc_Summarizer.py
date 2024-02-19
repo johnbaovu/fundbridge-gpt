@@ -2,7 +2,6 @@ import streamlit as st
 
 import utils
 from utils import create_temp_file, num_tokens_from_string, select_prompt
-import clipboard
 
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
